@@ -1,7 +1,3 @@
-=========================
-Tabelas seguindo DIAGRAMA
-=========================
-
 CREATE OR REPLACE TABLE `silver.accounts` AS 
 SELECT 
   CAST(account_id AS INTEGER) account_id, 
