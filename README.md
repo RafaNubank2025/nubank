@@ -1,197 +1,198 @@
 ### 📊 Nubank - Analytics Engineer  
 
-Este repositório contém a solução para o case de **Analytics Engineer** no **Nubank**. O objetivo do projeto é demonstrar habilidades em modelagem de dados, transformação de dados (**ETL/ELT**) e análise para suportar decisões estratégicas.  
+This repository contains the solution for the Analytics Engineer case at Nubank. The project's objective is to demonstrate skills in data modeling, data transformation (ETL/ELT), and analysis to support strategic decision-making.
 
 ---
 
-## 🚀 Tecnologias Utilizadas  
+## 🚀 Technologies Used  
 
-- **Cloud Storage** – Armazenamento dos arquivos CSV  
-- **Cloud Run** – Função para acionar o processamento dos arquivos automaticamente  
-- **Python** – Utilizado para manipulação de dados (**pandas, API Cloud Storage, API BigQuery**)  
-- **SQL (BigQuery)** – Para modelagem e consultas dos dados  
-- **DBdiagram.io** – Criação do diagrama e modelagem de dados  
-
----
-
-## 🔄 Arquitetura de Dados Atual x Proposta de Nova Arquitetura  
-
-A arquitetura de dados atual apresenta alguns pontos de melhoria, especialmente na estrutura do **Data Warehouse**. Para otimizar a organização e facilitar o consumo de dados, propus uma arquitetura baseada em três camadas:  
-
-1. **Bronze** – Camada de dados brutos.  
-   - Todos os dados são carregados como **string** para evitar complexidade e problemas de compatibilidade entre fontes de dados.  
-   - Os **analistas de negócios** não possuem acesso a essa camada.  
-
-2. **Silver** – Camada de dados tratados.  
-   - Os dados são **tipados e passam por pequenas transformações**.  
-   - Os **analistas de negócios** podem acessar e manipular os dados.  
-
-3. **Gold** – Camada de dados prontos para relatórios.  
-   - Contém tabelas refinadas e otimizadas para **reporting e dashboards**.  
+- **Cloud Storage** – Storage for CSV files  
+- **Cloud Run** – Function to trigger file processing automatically  
+- **Python** – Used for data manipulation (**pandas, Cloud Storage API, BigQuery API**)  
+- **SQL (BigQuery)** – For data modeling and queries  
+- **DBdiagram.io** – Creation of the diagram and data modeling  
 
 ---
 
-## 🛠️ Criação de Tabelas na Camada Bronze  
+## 🔄 Current Data Architecture vs. Proposed New Architecture  
 
-Seguindo a estratégia descrita acima, fiz alterações no arquivo **tables_diagram**. Em vez de criar tabelas já tipadas, todas as colunas foram definidas inicialmente como **string**.  
+The current data architecture has some areas for improvement, especially in the **Data Warehouse** structure. To optimize organization and facilitate data consumption, I proposed an architecture based on three layers:  
 
-📝 **Motivação:**  
-- **Evitar incompatibilidade** entre diferentes fontes de dados.  
-- **Facilitar a ingestão** de novos arquivos sem necessidade de pré-transformação.  
-- **Garantir maior flexibilidade** para tipagem posterior na camada **Silver**.  
+1. **Bronze** – Raw data layer.  
+   - All data is loaded as **string** to avoid complexity and compatibility issues between data sources.  
+   - **Business analysts** do not have access to this layer.  
 
-📚 O código está disponível [neste link](https://github.com/RafaNubank2025/nubank/blob/main/sql/create_table_bronze_layer.sql).  
+2. **Silver** – Processed data layer.  
+   - Data is **typed and undergoes minor transformations**.  
+   - **Business analysts** can access and manipulate the data.  
 
----
-
-## 📅 Ingestão de Arquivos CSV  
-
-Para garantir uma solução **dinâmica e de fácil uso**, tanto para **usuários técnicos quanto não técnicos**, utilizei uma abordagem automatizada baseada em:  
-
-- **Cloud Storage** – Responsável por armazenar os arquivos CSV.  
-- **Cloud Run** – Executa automaticamente o processamento dos arquivos.  
-- **BigQuery** – Base central para armazenamento e consultas dos dados.  
-
-📌 **Fluxo de processamento:**  
-1. **Upload do arquivo CSV** para o **bucket principal** (`nubank_files`):
-
-![city](https://github.com/user-attachments/assets/7b48bb76-f455-4439-8416-63bb4a4b063e)
-
-2. **Cloud Run** identifica o novo arquivo e aciona a função de processamento:  
-
-![city2](https://github.com/user-attachments/assets/e6f90776-15a4-455c-b9e9-b23588b507b1)
-
-3. O arquivo é processado para sua **respectiva tabela** na camada **Bronze do BigQuery**:
-
-![city3](https://github.com/user-attachments/assets/d30804b7-dd1e-4958-887b-4478df9ac28f)
-
-4. Os dados são movidos para o **bucket de arquivos processados** que possue uma classe de armazenamento mais fria (`nubank_processed_files`):
-
-![city4](https://github.com/user-attachments/assets/347bbaa2-6c45-4b7f-ac94-463472ea4909)
-
-💡 **Benefícios dessa solução:**  
-- **Automatização** do carregamento dos arquivos.  
-- **Melhor controle** e rastreabilidade dos arquivos.  
-- **Facilidade de uso** para diferentes perfis de usuários.
-- **Economia de custos** movimentando os arquivos processados para uma classe mais fria.  
-
-📚 O código está disponível [neste link](https://github.com/RafaNubank2025/nubank/tree/main/python).  
+3. **Gold** – Ready-for-reporting data layer.  
+   - Contains refined and optimized tables for **reporting and dashboards**.  
 
 ---
 
-## 🛠️ Criação de Tabelas na Camada Silver  
+## 🛠️ Creating Tables in the Bronze Layer  
 
-Agora que os dados estão carregados na camada bronze do nosso Data Warehouse, podemos seguir e popular nossa camada **silver**.
-Precisei transformar a tipagem de dados de algumas colunas.
+Following the strategy described above, I made changes to the **tables_diagram** file. Instead of creating already typed tables, all columns were initially defined as **string**.  
 
-📚 O código está disponível [neste link](https://github.com/RafaNubank2025/nubank/blob/main/sql/create_table_silver_layer.sql).  
+📝 **Motivation:**  
+- **Avoid incompatibility** between different data sources.  
+- **Facilitate ingestion** of new files without the need for pre-transformation.  
+- **Ensure greater flexibility** for later typing in the **Silver** layer.  
 
----
-
-## Problem 1 💡
-
-Your colleague Jane Hopper, the Business Analyst in charge of analyzing customer behavior, who directly consumes data from the Data Warehouse Environment, 
-needs to get all the Account's Monthly Balances between Jan/2020 and Dec/2020. She wasn't able to do it alone, and asked for your help with the query needed!
-
-📚 Código SQL com a resolução do problema [neste link](https://github.com/RafaNubank2025/nubank/blob/main/sql/get_all_account_monthly_balances.sql).  
-📅 File output in csv format [neste link](https://github.com/RafaNubank2025/nubank/blob/main/file_csv/get_all_account_monthly_balances.csv).
+📚 The code is available [at this link](https://github.com/RafaNubank2025/nubank/blob/main/sql/create_table_bronze_layer.sql).  
 
 ---
 
-## Problem 2 💡
+## 📅 CSV File Ingestion  
 
-Esse problema foi realmente bem legal de resolver, bastante desafiador. 
-Segue imagem da nova modelagem de dados:
+To ensure a **dynamic and user-friendly solution** for both **technical and non-technical users**, I implemented an automated approach based on:  
 
-![Untitled (1)](https://github.com/user-attachments/assets/fe211918-9dc2-4a89-b2bc-45d41be7f859)
+- **Cloud Storage** – Responsible for storing CSV files.  
+- **Cloud Run** – Automatically triggers file processing.  
+- **BigQuery** – Central repository for data storage and queries.  
 
-**A proposta de melhoria no modelo leva em consideração os aspectos abaixo:**
+📌 **Processing Flow:**  
+1. **CSV file upload** to the **main bucket** (`nubank_files`):  
 
-**Falta de uma tabela de transações unificada.**
+   ![city](https://github.com/user-attachments/assets/7b48bb76-f455-4439-8416-63bb4a4b063e)  
 
-Hoje, existem três tabelas separadas para movimentações financeiras:
-transfer_ins (entradas)
-transfer_outs (saídas)
-pix_movements (PIX enviados e recebidos)
-Isso torna consultas mais complexas e dificulta a inclusão de novos métodos de pagamento.
+2. **Cloud Run** detects the new file and triggers the processing function:  
 
-**Campos de data dispersos**
+   ![city2](https://github.com/user-attachments/assets/e6f90776-15a4-455c-b9e9-b23588b507b1)  
 
-As tabelas de movimentação financeira usam transaction_completed_at e pix_completed_at, que são IDs referenciando d_time.
-Isso adiciona um nível extra de complexidade ao modelo, dificultando consultas simples.
+3. The file is processed into its **respective table** in the **BigQuery Bronze layer**:  
 
-**Falta de suporte para novos produtos**
+   ![city3](https://github.com/user-attachments/assets/d30804b7-dd1e-4958-887b-4478df9ac28f)  
 
-Hoje, a estrutura só suporta transferências entre contas.
-Não há suporte para outros produtos, como seguros, cartões de crédito, empréstimos, recompensas, etc.
+4. The data is moved to the **processed files bucket**, which has a colder storage class (`nubank_processed_files`):  
 
-**Duplicação de informações de localização**
+   ![city4](https://github.com/user-attachments/assets/347bbaa2-6c45-4b7f-ac94-463472ea4909)  
 
-customers já possui customer_city, mas também armazena country_name, o que pode gerar inconsistências e redundâncias.
-O ideal seria usar apenas city_id e garantir que a localização seja obtida por meio das tabelas de referência (city, state, country).
+💡 **Benefits of this solution:**  
+- **Automated** file loading.  
+- **Better control** and traceability of files.  
+- **Ease of use** for different user profiles.  
+- **Cost savings** by moving processed files to a colder storage class.  
 
-**Proposta de Melhoria no Modelo**
-
-1️⃣ Criar uma Tabela Unificada para Transações (transactions)
-
-Em vez de ter três tabelas (transfer_ins, transfer_outs e pix_movements), podemos consolidar tudo em uma única tabela transactions.
-
-Vantagens:
-
-✅ Facilita consultas → Em vez de fazer UNION ALL em várias tabelas, os analistas acessam uma única fonte de dados.
-
-✅ Escalável → Se o Nubank adicionar novos tipos de transações (boletos, cartões, seguros, etc.), basta incluir novos valores em transaction_type.
-
-✅ Melhora performance → Reduz o número de joins necessários para consultas financeiras.
-
-2️⃣ Criar uma Tabela de Produtos Financeiros (financial_products)
-
-Como Nubank pode expandir para novas áreas (seguros, empréstimos, cartões, etc.), podemos adicionar uma tabela para rastrear os produtos financeiros associados a cada conta.
-
-Vantagens:
-
-✅ Melhora a flexibilidade → Nubank pode adicionar novos produtos sem alterar a estrutura do Data Warehouse.
-
-✅ Melhora a análise → Permite que os analistas entendam quais contas têm produtos ativos e como eles impactam a movimentação financeira.
-
-3️⃣ Melhorar a Modelagem de Datas
-
-Remover a necessidade de referenciar d_time.time_id em transactions.
-Usar diretamente os campos de created_at ou updated_at em timestamp, que já contém a data/hora real.
-d_time, d_month e d_year ainda podem existir para análises agregadas, mas não devem ser obrigatórios em todas as transações.
-
-Vantagens:
-
-✅ Facilita consultas temporais → Os analistas podem explorar sem precisar de joins adicionais.
-
-✅ Reduz complexidade → Torna a modelagem mais intuitiva e eficiente.
-
-Diagrama Melhorado
-Aqui está um resumo da estrutura melhorada:
-
-🔹 Tabelas Unificadas:
-
-✔ transactions → Substitui transfer_ins, transfer_outs e pix_movements.
-
-✔ financial_products → Nova tabela para gerenciar produtos financeiros.
-
-🔹 Otimizações:
-
-✔ transactions.created_at / transactions.updated_at → Usa timestamp em vez de d_time.time_id.
-
-✔ customers → Remove redundância de country_name, utilizando apenas city_id.
-
-**Trade-offs e Impacto**  
-
-| Mudança | Benefícios | Possíveis Desafios |
-|---------|------------|--------------------|
-| Unificar transações em transactions | Reduz joins, melhora performance e escalabilidade | Os dados dessa tabela aumentarão consideravelmente, portanto, precisamos de um plano de rollout altamente assertivo para que os usuários compreendam a nova granularidade dos dados e a importância dos filtros. 
-|||Requer migração dos dados antigos |
-| Criar financial_products | Permite análise de produtos (cartão, seguros, etc.) | Pode precisar de ajustes para novos produtos |
-| Remover dependência de d_time.time_id | Facilita consultas temporais | Muitas queries podem precisar de ajustes |
+📚 The code is available [at this link](https://github.com/RafaNubank2025/nubank/tree/main/python).  
 
 ---
 
-## 📌 Conclusão  
+## 🛠️ Creating Tables in the Silver Layer  
 
-💡 Com essas mudanças, o Data Warehouse da Nubank se torna mais flexível, escalável e eficiente.  
+Now that the data is loaded into the Bronze layer of our Data Warehouse, we can proceed to populate the **Silver** layer.  
+I had to transform the data types of some columns.  
+
+📚 The code is available [at this link](https://github.com/RafaNubank2025/nubank/blob/main/sql/create_table_silver_layer.sql).  
+
+---
+
+## Problem 1 💡  
+
+Your colleague Jane Hopper, the Business Analyst in charge of analyzing customer behavior, who directly consumes data from the Data Warehouse Environment,  
+needs to get all the Account's Monthly Balances between Jan/2020 and Dec/2020. She wasn't able to do it alone and asked for your help with the query needed!  
+
+📚 SQL code with the solution [at this link](https://github.com/RafaNubank2025/nubank/blob/main/sql/get_all_account_monthly_balances.sql).  
+📅 File output in CSV format [at this link](https://github.com/RafaNubank2025/nubank/blob/main/file_csv/get_all_account_monthly_balances.csv).  
+
+---
+
+## Problem 2 💡  
+
+This problem was really exciting to solve—quite challenging!  
+Below is an image of the new data model:  
+
+![Untitled (1)](https://github.com/user-attachments/assets/fe211918-9dc2-4a89-b2bc-45d41be7f859)  
+
+**The proposed improvements to the model consider the following aspects:**  
+
+### **Lack of a unified transactions table**  
+
+Currently, there are three separate tables for financial transactions:  
+- `transfer_ins` (incoming transfers)  
+- `transfer_outs` (outgoing transfers)  
+- `pix_movements` (PIX transactions, sent and received)  
+
+This setup makes queries more complex and complicates the inclusion of new payment methods.  
+
+### **Scattered date fields**  
+
+The financial movement tables use `transaction_completed_at` and `pix_completed_at`, which reference `d_time`.  
+This adds an extra level of complexity to the model, making simple queries harder.  
+
+### **Lack of support for new products**  
+
+Currently, the structure only supports account-to-account transfers.  
+It does not support other financial products like insurance, credit cards, loans, or rewards.  
+
+### **Duplicate location information**  
+
+The `customers` table already contains `customer_city`, but it also stores `country_name`, which can lead to inconsistencies and redundancies.  
+The ideal solution is to use only `city_id` and ensure location data is obtained via reference tables (`city`, `state`, `country`).  
+
+---
+
+## **Proposed Model Improvements**  
+
+### **1️⃣ Create a Unified Transactions Table (`transactions`)**  
+
+Instead of maintaining three tables (`transfer_ins`, `transfer_outs`, and `pix_movements`), we can consolidate them into a single `transactions` table.  
+
+#### **Advantages:**  
+✅ **Simplified queries** → Analysts can access a single source of data instead of performing `UNION ALL` operations.  
+✅ **Scalability** → If Nubank adds new transaction types (e.g., bills, credit cards, insurance), we only need to add new `transaction_type` values.  
+✅ **Better performance** → Reduces the number of `JOIN` operations required for financial queries.  
+
+---
+
+### **2️⃣ Create a Financial Products Table (`financial_products`)**  
+
+Since Nubank may expand into new areas (insurance, loans, credit cards, etc.), we should introduce a table to track financial products linked to each account.  
+
+#### **Advantages:**  
+✅ **Greater flexibility** → New products can be added without changing the Data Warehouse structure.  
+✅ **Better analysis** → Helps analysts understand which accounts have active products and how they impact financial transactions.  
+
+---
+
+### **3️⃣ Improve Date Modeling**  
+
+We should remove the dependency on `d_time.time_id` in `transactions`.  
+Instead, we should store direct timestamps (`created_at`, `updated_at`) containing actual date-time values.  
+
+**The `d_time`, `d_month`, and `d_year` tables can still exist for aggregated analyses but should not be mandatory in every transaction.**  
+
+#### **Advantages:**  
+✅ **Easier time-based queries** → Analysts can explore data without extra `JOIN` operations.  
+✅ **Lower complexity** → Makes the model more intuitive and efficient.  
+
+---
+
+## **Improved Data Model Summary**  
+
+🔹 **Unified Tables:**  
+✔ `transactions` → Replaces `transfer_ins`, `transfer_outs`, and `pix_movements`.  
+✔ `financial_products` → New table to manage financial products.  
+
+🔹 **Optimizations:**  
+✔ `transactions.created_at` / `transactions.updated_at` → Uses timestamps instead of `d_time.time_id`.  
+✔ `customers` → Removes redundancy of `country_name`, relying only on `city_id`.  
+
+---
+
+## **Trade-offs & Impact**  
+
+| Change | Benefits | Possible Challenges |  
+|--------|----------|---------------------|  
+| **Unifying transactions into `transactions`** | Reduces `JOINs`, improves performance and scalability | The table will grow significantly, requiring a well-planned rollout to ensure users understand the new data structure and filtering importance. |  
+|  |  | Requires migration of old data |  
+| **Creating `financial_products`** | Enables product analysis (cards, insurance, etc.) | May require adjustments for future products |  
+| **Removing dependency on `d_time.time_id`** | Simplifies date-based queries | Many queries may need adjustments |  
+
+---
+
+## 📌 **Conclusion**  
+
+💡 **With these changes, Nubank’s Data Warehouse becomes more flexible, scalable, and efficient.** 🚀  
+
