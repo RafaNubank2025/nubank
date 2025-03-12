@@ -49,7 +49,7 @@ WITH transactions AS (
 ),
 
 aggregated AS (
-    -- Somando entradas e saídas por conta e mês
+    -- Somando entradas e saídas por conta, mês e ano
     SELECT 
         account_id,
         year,
