@@ -14,7 +14,10 @@ This repository contains the solution for the Analytics Engineer case at Nubank.
 
 ---
 
-## 🔄 Current Data Architecture vs. Proposed New Architecture  
+## Current Data Architecture 
+<img width="675" alt="Captura de Tela 2025-04-08 às 14 48 17" src="https://github.com/user-attachments/assets/820c6cf1-6a07-45a2-90ef-5999651d0682" />
+
+## Proposed New Architecture
 
 The current data architecture has some areas for improvement, especially in the **Data Warehouse** structure. To optimize organization and facilitate data consumption, I proposed an architecture based on three layers:  
 
@@ -101,7 +104,11 @@ needs to get all the Account's Monthly Balances between Jan/2020 and Dec/2020. S
 ## Problem 2 💡  
 
 This problem was really exciting to solve—quite challenging!  
-Below is an image of the new data model:  
+
+### Current data model:
+<img width="667" alt="Captura de Tela 2025-04-08 às 14 48 32" src="https://github.com/user-attachments/assets/e1aa6767-92d7-4c20-8aa0-7c0bdaa8a2a0" />
+
+### Below is an image of the new data model:  
 
 ![Untitled (1)](https://github.com/user-attachments/assets/fe211918-9dc2-4a89-b2bc-45d41be7f859)  
 
